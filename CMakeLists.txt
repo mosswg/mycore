@@ -4,6 +4,7 @@ project(Mycelium)
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
 set(CMAKE_ASM_NASM_LINK_EXECUTABLE "ld <CMAKE_ASM_NASM_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
 set(CMAKE_ASM_NASM_FLAGS -g)
+set( CMAKE_VERBOSE_MAKEFILE on )
 
 enable_language(ASM_NASM)
 
@@ -12,12 +13,6 @@ option(BUILD_EXAMPLES "Build the example files into executables" OFF)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-add_executable(mycelium
-        token.asm
-        lexer.asm
-        op.asm
-        mycelium.asm
-        )
 include_directories(mycelium .)
 
 if (BUILD_STD_LIB)

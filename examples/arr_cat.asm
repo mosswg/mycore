@@ -9,6 +9,7 @@ global _start
 
 section .data
   arr_size: equ 10
+  str:      db " + ", 0
 
 section .text
 
@@ -21,6 +22,7 @@ _start:
 main:
     mov     rax, arr_size
     mov     rbx, type#int
+    ;; new array into rsi
     call    arr#new
 
     mov     r9, rsi
@@ -29,7 +31,15 @@ main:
     mov     rbx, 5
     mov     rcx, 1
 
+    ;; set the element at index 5 of  array in r9 to 1
     call    arr~set
+
+    mov    rax, r9
+    call   arr~print
+
+
+    mov   rax, str
+    call  cstr~print
 
 
     mov     rax, arr_size
@@ -40,10 +50,12 @@ main:
 
     mov     rax, r10
     mov     rbx, 5
-    mov     rcx, 1
+    mov     rcx, 2
 
     call    arr~set
 
+    mov    rax, r10
+    call   arr~println
 
     mov     rax, r9
     mov     rbx, r10

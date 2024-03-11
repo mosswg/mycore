@@ -34,15 +34,6 @@ main:
 
   mov   rax, r9
 
-; call  arr~printn
-
-  mov   rax, r9
-  mov   rbx, str~split
-  mov   rcx, type#arr
-  mov   rdx, 0x20
-  call  arr~for_each
-
-  mov   rax, rsi
   call  arr~printn
 
   mov   rax, r10

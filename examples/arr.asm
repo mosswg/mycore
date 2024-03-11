@@ -21,11 +21,10 @@ _start:
 main:
     mov     rax, arr_size
     mov     rbx, type#int
+  ;; new array into rsi
     call    arr#new
 
-    mov     r9, rsi
-
-    mov     rax, r9
+    mov     rax, rsi
     call    arr~printn
 
     ret

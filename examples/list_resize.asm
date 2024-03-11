@@ -16,8 +16,8 @@ section .data
   resize_success:     db "Resized list to size ", 0
   success_post:       db " with an address of ", 0
   first_size:         equ 64
-  size_shift:         equ 5
-  resize_amount:      equ 4
+  size_shift:         equ 2
+  resize_amount:      equ 10
 
 section .text
 

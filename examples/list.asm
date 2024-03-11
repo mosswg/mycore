@@ -39,7 +39,7 @@ main:
   mov   r9, rsi
 
   mov   rax, create_success
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  list~len
@@ -48,7 +48,7 @@ main:
   call  int~print
 
   mov   rax, success_post
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  int~println
@@ -73,7 +73,7 @@ main:
 
 
   mov   rax, write_success
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  list~println
@@ -82,26 +82,28 @@ main:
   call  out~putc
 
 
+
   mov   rax, r9
   mov   rbx, push_value
-  mov   rcx, type#string
+  mov   rcx, type#cstring
   call  list~push
   mov   r9, rax
 
+
   mov   rax, push_success_pre
-  call  str~print
+  call  cstr~print
 
   mov   rax, '"'
   call  out~putc
 
   mov   rax, push_value
-  call  str~print
+  call  cstr~print
 
   mov   rax, '"'
   call out~putc
 
   mov   rax, push_success_post
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  list~println
@@ -115,7 +117,7 @@ main:
   mov   r9, rax
 
   mov   rax, resize_success
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  list~len
@@ -124,7 +126,7 @@ main:
   call  int~print
 
   mov   rax, success_post
-  call  str~print
+  call  cstr~print
 
   mov   rax, r9
   call  int~println

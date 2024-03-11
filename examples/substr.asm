@@ -8,7 +8,9 @@
 global _start
 
 section .data
-    arg1:       db "<string> <split start> <split end>", 0
+    arg1:       db "<string>", 0
+    arg2:       db "<split start>", 0
+    arg3:       db "<split end>", 0
 
 section .text
 
@@ -20,8 +22,12 @@ _start:
 
 main:
     mov     rax, 3
+    push    arg3
+    push    arg2
     push    arg1
     call    args~require
+    pop     rax
+    pop     rax
     pop     rax
 
     mov     rax, 2
@@ -72,7 +78,6 @@ main:
     mov     rcx, r12
 
     call    str~substr
-
 
     mov     rax, rsi
 

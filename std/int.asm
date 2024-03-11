@@ -5,12 +5,16 @@
 %define _Mycelium_std_int_
 
 %include "std/out.asm"
+%include "std/str.asm"
+%include "std/arr.asm"
 
 ; Args
 ;   rax: out string
 ;   rbx: number
+; Modifies
+;   rsi
 ; Return
-;   rsi: number of digits
+;   rsi: string length
 int~to_cstring:
   push  rbp
   mov   rbp, rsp
@@ -22,13 +26,25 @@ int~to_cstring:
   push  r9
   push  r10
   push  r11
+  push	r12                     ; str len
+  push  rax
 
+  mov	r12, 0
+
+	cmp	rbx, 0
+	jge	.non_neg
+  mov	r11b, '-'
+	mov	[rax], r11b
+	add	rax, 1
+  inc	r12
+  neg	rbx
+  .non_neg:
   mov   r9, rax         ; Move the out string to a place we don't need for other functions
   mov   r8, rbx
   mov   rax, rbx
   call  int~digits
-  push  rsi
-  
+  add	r12, rsi
+
   cmp   rsi, 1
   jne   .multidigit
   .singledigit:
@@ -63,9 +79,11 @@ int~to_cstring:
   jge .loop
 
   .return:
-  mov rax, r9
-  mov rbx, r8
-  pop   rsi
+  mov	rsi, r12
+  pop   rax
+  mov	rbx, r8
+
+  pop	r12
   pop   r11
   pop   r10
   pop   r9
@@ -148,6 +166,8 @@ int~print:
 
 ; Args
 ;   rax: the number to be printed
+; Modifies
+;   rbx
 ; Returns
 ;   void
 int~println:

@@ -83,12 +83,13 @@ str~length:
 str~print:
   push  rbp
   mov   rbp, rsp
-                        ; Perserve the used regiser value
+                        ; Perserve the used regiser values
   push  rbx
   push  rsi
   push  rax
 
   call  str~length
+
   mov   rbx, rsi
   lea   rax, [rax + arr#meta_size]
   call  out~puts

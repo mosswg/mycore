@@ -24,7 +24,7 @@ args~get:
     call    exception~runtime~throw
     .valid_arg:
     mov     rbx, 8
-    mul     rbx
+    mul     rbx                 ; rax = rax * 8
     lea     rbx, [r15]
     add     rbx, rax
     mov     rsi, [rbx]

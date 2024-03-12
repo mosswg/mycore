@@ -45,7 +45,7 @@
 sys~write:
   push  rdx
   push  r11
-  
+
   mov   rdx, rsi
   mov   rsi, rdi
   mov   rdi, rax

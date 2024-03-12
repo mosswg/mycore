@@ -28,6 +28,27 @@ mod#mul:
 
 ; Args
 ;   rax: a
+;   rbx: modulo
+; Modifies
+;   rsi
+; Return
+;   rsi: a (mod m)
+mod#reduce:
+	push rax
+	xor rdx, rdx
+	cqo
+	idiv rbx
+	cmp rdx, 0
+	jge .non_neg
+	add rdx, rbx
+	.non_neg:
+	mov rsi, rdx
+	pop rax
+	ret
+
+
+; Args
+;   rax: a
 ;   rbx: b
 ;   rcx: modulo
 ; Modifies
@@ -84,5 +105,151 @@ mod#power:
 	ret
 
 
+
+; Args
+;   rax: a
+;   rbx: h
+;   rcx: m
+; Modifies
+;   rsi
+; Return
+;   rsi: x where a^x = h (mod m)
+mod#shanks:
+	push r8						; a
+	push r9						; h
+	push r10						; m
+	push r11						; n
+	push r12						; L1
+	push r13						; L2
+	push r14						; g^-n
+	push r15					; loop counter
+
+
+	mov r8, rax
+	mov r9, rbx
+	mov r10, rcx
+
+	mov rax, r10
+	call math#sqrt
+	inc rsi
+	mov r11, rsi				; r11 = sqrt(m)
+
+	mov rax, r8
+	mov rbx, r11
+	mov rcx, r10
+	call mod#power
+
+	mov rbx, rsi
+	mov rax, r10
+	call math#eea
+	mov rax, r12
+	mov rbx, r10
+	call mod#reduce
+
+	mov r14, rsi				; r14 = g^-n; doing this first since we need r12 for L1
+
+
+	mov rax, r11
+	mov rbx, type#int
+	call arr#new
+
+	mov r12, rsi
+
+	mov rcx, 1
+	mov rbx, 0
+	mov rax, r12
+	call arr~set
+
+	mov rax, r11
+	mov rbx, type#int
+	call arr#new
+
+	mov r13, rsi
+
+	mov rcx, r9
+	mov rbx, 0
+	mov rax, r13
+	call arr~set
+
+	mov r15, 1
+
+	.generation_loop:
+	cmp r15, r11
+	jge .end_gen
+	mov rax, r12
+	mov rbx, r15
+	dec rbx
+	call arr~get
+	mov rax, rsi
+	mov rbx, r8
+	mov rcx, r10
+	call mod#mul
+
+	mov rcx, rsi
+	mov rbx, r15
+	mov rax, r12
+	call arr~set
+
+	mov rax, r13
+	mov rbx, r15
+	dec rbx
+	call arr~get
+	mov rax, rsi
+	mov rbx, r14
+	mov rcx, r10
+	call mod#mul
+
+	mov rcx, rsi
+	mov rbx, r15
+	mov rax, r13
+	call arr~set
+
+	inc r15
+	jmp .generation_loop
+	.end_gen:
+
+	mov r15, 0					; inner loop
+	mov r9, 0					; outer loop (we dont need r8-r10) anymore
+
+	.outer_search_loop:
+	xor r9, r9
+	inc r15
+	cmp r15, r11
+	jge .return
+
+	mov rax, r12
+	mov rbx, r15
+	call arr~get
+	mov r8, rsi 				; we dont need r8-r10 anymore
+
+	.inner_search_loop:
+	cmp r9, r11
+	jge .outer_search_loop
+	mov rax, r13
+	mov rbx, r9
+	call arr~get
+	mov rcx, rsi 				; we dont need r8-r10 anymore
+
+	cmp r8, rcx
+	je  .return
+	inc r9
+	jmp .inner_search_loop
+
+
+	.return:
+	mov rax, r9
+	mul r11
+	add rax, r15
+	mov rbx, r10
+	call mod#reduce
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	ret
 
 %endif

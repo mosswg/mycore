@@ -68,15 +68,23 @@ arr#populate_metadata:
 arr#new:
     push    rcx
     push    rdx
+    push	rbx
 
     mov     rcx, rax
 
-    mov     rax, arr#global_stride          ; Load the stride into rax
+    mov     rax, rbx
+    call    type~sizeof
+    mov     rbx, rsi
+
+    mov     rax, rcx          ; Load the stride into rax
+    mul     rbx
+    add     rax, arr#global_stride
 
     add     rax, arr#meta_size              ; Add the metadata size
     call    mem~allocate                    ; Create an array in memory with the size specified in global stride
 
     lea     rax, [rsi]
+    pop	rbx
     call    arr#populate_metadata
 
     pop     rdx
@@ -158,7 +166,7 @@ arr#concat:
         mov     rax, r12
         mov     rbx, rsi
         call    arr~push
-    
+
         add     r8, 1
     .loop_check:
         cmp     r8, r9
@@ -661,7 +669,7 @@ arr~resize:
     push    rax
 
     mov     rax, rbx
-    shl     rax, 3              ; Multiply by 3 to get the byte size
+    shl     rax, 3              ; Multiply by 8 (a << 3) to get the byte size
     mov     rdx, 0
     div     r10d
 
@@ -852,7 +860,7 @@ arr~for_each:
         mov     rax, rsi
 
         mov     rbx, r10
-    
+
         call    [rsp]
 
         mov     rbx, rsi

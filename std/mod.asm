@@ -47,6 +47,24 @@ mod#reduce:
 	ret
 
 
+
+
+; Args
+;   rax: a
+;   rbx: modulo
+; Modifies
+;   rsi
+; Return
+;   rsi: a^-1 (mod m)
+mod#inverse:
+	push rdi
+	push r12
+	call math#eea
+	mov rsi, rdi
+	pop r12
+	pop rdi
+	ret
+
 ; Args
 ;   rax: a
 ;   rbx: b
@@ -250,6 +268,48 @@ mod#shanks:
 	pop r10
 	pop r9
 	pop r8
+	ret
+
+
+
+; Args
+;   rax: a
+;   rbx: m
+; Modifies
+;   rsi
+; Return
+;   rsi: a! (mod m)
+mod#factorial:
+	push	r8					; a
+	push	r9					; m
+	push	r10				; out
+	push	r11
+	push	r12
+	push	rdx
+
+	mov	r8, rax
+	mov	r9, rbx
+	mov	r10, r8
+
+	.loop:
+	dec	r8
+	cmp	r8, 1
+	jle	.return
+	mov	rax, r10
+	mov	rbx, r8
+	mov	rcx, r9
+	call	mod#mul
+	mov	r10, rsi
+	jmp	.loop
+
+	.return:
+	mov	rsi, r10
+	pop	rdx
+	pop	r12
+	pop	r11
+	pop	r10
+	pop	r9
+	pop	r8
 	ret
 
 %endif

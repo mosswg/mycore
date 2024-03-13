@@ -311,4 +311,59 @@ math#log:
 	bsr	rsi, rax
 	ret
 
+
+
+; Args
+;   rax: a
+; Modifies
+;   rsi, rax, rbx
+; Returns
+;   zf: if a is prime
+; Description
+;   this is stupid
+math#isprime:
+	push r8						; a
+	push r9						; sqrt(a)
+	push r10						; loop counter
+
+	mov r8, rax
+	mov r10, 3
+
+
+	xor rdx, rdx
+	mov rbx, 2
+	div rbx
+	cmp rdx, 0
+	je .composite
+
+	mov rax, r8
+
+	call math#sqrt
+	mov r9, rsi
+	inc r9
+	.loop:
+		cmp r10, r9
+		jge .prime
+		xor rdx, rdx
+		mov rax, r8
+		div r10
+		cmp rdx, 0
+		je .composite
+		add r10, 2
+	jmp .loop
+
+	.composite:
+	mov r10, 1
+	cmp r10, 0
+	jmp .return
+
+	.prime:
+	xor r10, r10
+	cmp r10, 0
+	.return:
+	pop r10
+	pop r9
+	pop r8
+	ret
+
 %endif                          ; ifdef guard

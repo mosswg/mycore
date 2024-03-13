@@ -234,4 +234,17 @@ int~digits:
   ret
 
 
+; Args
+;   rax: int number
+; Modifies
+;   rsi
+; Return
+;   st0: rax as a float
+int~to_float:
+  push  rax
+  fild  qword [rsp]
+  pop   rax
+  ret
+
+
 %endif                          ; ifdef guard

@@ -7,6 +7,7 @@
 %include "std/out.asm"
 %include "std/arr.asm"
 %include "std/cstr.asm"
+%include "std/float.asm"
 
 
   ;; String extends arr
@@ -240,13 +241,80 @@ str~to_int:
   ret
 
 
+; Args
+;   rax: string
+; Returns
+;   st0: float form
+; TODO: Add support for negative value
+str~to_float:
+  push  r8                            ; string
+  push  r9                            ; len
+  push  r10                           ; counter
+  fldz
+  mov   sil, [rax+arr#meta_size]      ; out
+  sub   sil, '0'
+  mov   r10, 0
+
+  mov   r8, rax
+  mov   r9, [r8+arr#meta#user_size]
+
+
+  .int_part_loop:
+    cmp   r10, r9
+    jge   .return
+
+    xor     rax, rax
+    mov     al, [r8+arr#meta_size + r10]
+    cmp     al, '.'
+    je      .float_part
+    sub     al, '0'
+    fld   dword [ften]
+    fmul
+    push    rax
+    fild    qword [rsp]
+    pop     rax
+    fadd
+    inc     r10
+    jmp .int_part_loop
+
+  .float_part:
+    inc r10
+    fld1
+    fldz
+  .float_part_loop:
+    cmp   r10, r9
+    jge   .combine_int_and_float
+    fld   dword [ften]
+    fmulp st2                   ; st1 *= 10
+
+    xor     rax, rax
+    mov     al, [r8+arr#meta_size + r10]
+    sub     al, '0'
+    push    rax
+    fild    qword [rsp]
+    pop     rax
+    fdiv    st0, st2            ; st0 /= st2 (prev st1)
+    fadd
+    inc     r10
+    jmp .float_part_loop
+
+  .combine_int_and_float:
+  fadd st2
+
+  .return:
+  pop   r10
+  pop   r9
+  pop   r8
+  ret
+
+
 
 ; Args
 ;   rax: string
 ;   rbx: char
 ; Returns
 ;   zf: starts with char
-str~starts_with_c:
+str~starts_with_char:
   push  r8
 
   mov   r8b, [rax+arr#meta_size]
@@ -261,7 +329,7 @@ str~starts_with_c:
 ;   rbx: char
 ; Returns
 ;   zf: ends with char
-str~ends_with_c:
+str~ends_with_char:
   push  r8
   push  r9
 
@@ -281,10 +349,10 @@ str~ends_with_c:
 ;   rbx: char
 ; Returns
 ;   zf: if wrapped
-str~wrapped_with_c:
-  call  str~starts_with_c
+str~wrapped_with_char:
+  call  str~starts_with_char
   jne   .return
-  call  str~ends_with_c
+  call  str~ends_with_char
 
   .return:
   ret

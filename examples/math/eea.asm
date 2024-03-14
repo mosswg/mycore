@@ -10,8 +10,8 @@ global _start
 
 section .data
     not_num:    db " is not a number", 0
-    arg1:       db "<base>", 0
-    arg2:       db "<power>", 0
+    arg1:       db "<a>", 0
+    arg2:       db "<b>", 0
 
 section .text
 

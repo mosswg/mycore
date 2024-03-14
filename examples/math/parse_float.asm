@@ -34,7 +34,7 @@ get_arg_to_num:
     mov     r9, rsi
 
     mov     rax, r9
-    call    str~is_int
+    call    str~is_float
     jne     .non_number
 
     mov     rax, r9

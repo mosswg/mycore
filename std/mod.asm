@@ -312,4 +312,54 @@ mod#factorial:
 	pop	r8
 	ret
 
+
+; Args
+;   rax: a
+;   rbx: b
+;   rcx: m
+;   rdx: n
+; Modifies
+;   rsi
+; Return
+;   rsi: x where x = a (mod m) and x = b (mod n). via x = a + s * (b - a) * m
+mod#chinese_remainder:
+	push r8					; a
+	push r9					; b
+	push r10					; m
+	push r11					; n
+	push r12					; used by eea
+
+	mov  r8, rax
+	mov  r9, rbx
+	mov  r10, rcx
+	mov  r11, rdx
+
+	mov  rax, r10
+	mov  rbx, r11
+	call math#eea
+
+	mov  rax, rdi
+
+	sub  r9, r8					; r9 = -r9 + r8 (this is done to subtract r9 from r8 while perserving r8 for later
+	mul  r9
+	mul  r10
+	add  rax, r8
+
+	mov  r8, rax
+
+	mov  rax, r10
+	mul  r11
+
+	mov  rbx, rax
+	mov  rax, r8
+	call mod#reduce
+
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	ret
+
+
 %endif

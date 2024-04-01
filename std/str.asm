@@ -200,6 +200,63 @@ str~is_int:
   pop     r8
   ret
 
+
+; Args
+;   rax: string
+; Returns
+;   zf: is float
+str~is_float:
+  push    r8                    ; counter
+  push    r9                    ; '0'
+  push    r10                   ; '9'
+  push    r11                   ; str
+  push    r12                   ; str size
+
+  mov     r9, '0'
+  mov     r10, '9'
+  lea     r11, [rax]
+  mov     r12, [rax + arr#meta#user_size]
+
+  xor     r8, r8
+
+  .loop:
+    lea   rax, [r11]
+    mov   rbx, r8
+    call  arr~get
+
+    and   rsi, 0xFF             ; Mask only the lowest 2 bytes
+
+    cmp   si, '.'
+    je    .dot
+    cmp   si, r9w
+    jl    .non_num
+    cmp   si, r10w
+    jg    .non_num
+
+    .dot:
+    add   r8, 1
+  .loop_check:
+    cmp   r8, r12
+    jl    .loop
+
+  jmp   .num
+  .non_num:
+  mov   r8, 1
+  cmp   r8, 0
+  jmp   .return
+
+  .num:
+  mov   r8, 1
+  cmp   r8, 1
+
+  .return:
+  pop     r12
+  pop     r11
+  pop     r10
+  pop     r9
+  pop     r8
+  ret
+
 ; Args
 ;   rax: string
 ; Returns

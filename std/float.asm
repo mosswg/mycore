@@ -11,6 +11,7 @@
 section .data
     fpucw:       dw 0
     ften:       dd 10.0
+    fpusave:	  times 128 db 0
 
 
 section .text
@@ -53,8 +54,21 @@ float~to_cstring:
 	push r9
 	push r10
 	mov  r8, rax
-	fld st0
 	fld st0						; duplicate st0 twice
+	fst st4
+	fld st0						; duplicate st0 twice
+
+
+
+	fldz
+	fcomip  st1
+	jge     .non_neg								; jmp non_neg if 0 < st0
+	mov    r11b, '-'
+	mov    [rax], r11b
+	inc    rax
+	neg    rbx
+
+	.non_neg:
 	call float~to_int
 	mov  rbx, rsi
 	call int~to_cstring
@@ -100,6 +114,7 @@ float~to_cstring:
 	.return:
 	mov rax, r8
 	mov rsi, r9
+	fld st4
 	pop r10
 	pop r9
 	pop r8

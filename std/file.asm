@@ -187,7 +187,7 @@ file~read_lines:
 
         add     r12, 1
         add     r10, 1
-    
+
         call    str#new         ; Create new string
 
         mov     rax, r9
@@ -214,7 +214,7 @@ file~read_lines:
 
         call    arr~set
 
-    
+
         add     r10, 1
     .loop_check:
         cmp     [r8+file#meta#stats + stats.size], r10
@@ -235,7 +235,7 @@ file~read_lines:
 ;   rbx: String
 ; Returns
 ;   void
-file~write_s:
+file~write_string:
     push    r11
 
     mov     rdi, [rax+file#meta#fd]
@@ -255,7 +255,7 @@ file~write_s:
 ;   rbx: C string
 ; Returns
 ;   void
-file~write_cs:
+file~write_cstring:
     push    r11
 
     mov     rdi, [rax+file#meta#fd]
@@ -345,6 +345,8 @@ file~close:
 ;   rax: File object
 ; Returns
 ;   void
+; Description
+;   Maps memory the size of the file for its contents
 file~mmap:
     push    rcx
     push    r8
